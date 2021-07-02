@@ -4,11 +4,27 @@ package infrastructure
 
 import (
 	"context"
-	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 type Querier interface {
-	GetUser(ctx context.Context, username sql.NullString) (User, error)
+	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	CreateUserAccount(ctx context.Context, arg CreateUserAccountParams) (UserAccount, error)
+	CreateUserAddress(ctx context.Context, arg CreateUserAddressParams) (UserAddress, error)
+	DeleteUser(ctx context.Context, id uuid.UUID) error
+	DeleteUserAccount(ctx context.Context, id uuid.UUID) error
+	DeleteUserAddress(ctx context.Context, id uuid.UUID) error
+	GetUser(ctx context.Context, id uuid.UUID) (User, error)
+	GetUserAccount(ctx context.Context, id uuid.UUID) (UserAccount, error)
+	GetUserAddress(ctx context.Context, id uuid.UUID) (UserAddress, error)
+	ListUserAccount(ctx context.Context, arg ListUserAccountParams) ([]UserAccount, error)
+	ListUserAddress(ctx context.Context, arg ListUserAddressParams) ([]UserAddress, error)
+	Login(ctx context.Context, email string) (LoginRow, error)
+	Register(ctx context.Context, arg RegisterParams) (User, error)
+	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
+	UpdateUserAccount(ctx context.Context, arg UpdateUserAccountParams) (UserAccount, error)
+	UpdateUserAddress(ctx context.Context, arg UpdateUserAddressParams) (UserAddress, error)
 }
 
 var _ Querier = (*Queries)(nil)

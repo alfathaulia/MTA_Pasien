@@ -4,91 +4,102 @@ package infrastructure
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 )
 
 type CheckUp struct {
-	ID            uuid.UUID      `json:"id"`
-	UserID        uuid.UUID      `json:"user_id"`
-	Complaint     sql.NullString `json:"complaint"`
-	SymptomsStart sql.NullTime   `json:"symptoms_start"`
-	CreatedAt     sql.NullTime   `json:"created_at"`
-	UpdatedAt     sql.NullTime   `json:"updated_at"`
+	ID            uuid.UUID `json:"id"`
+	UserID        uuid.UUID `json:"user_id"`
+	Complaint     string    `json:"complaint"`
+	SymptomsStart time.Time `json:"symptoms_start"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 }
 
 type HealthAgency struct {
-	Code         string         `json:"code"`
-	Name         sql.NullString `json:"name"`
-	AdminID      uuid.UUID      `json:"admin_id"`
-	PhotoProfile sql.NullString `json:"photo_profile"`
-	CreatedAt    sql.NullTime   `json:"created_at"`
-	UpdatedAt    sql.NullTime   `json:"updated_at"`
+	Code         string       `json:"code"`
+	Name         string       `json:"name"`
+	AdminID      uuid.UUID    `json:"admin_id"`
+	PhotoProfile string       `json:"photo_profile"`
+	CreatedAt    sql.NullTime `json:"created_at"`
+	UpdatedAt    time.Time    `json:"updated_at"`
 }
 
 type HealthAgencyAddress struct {
-	ID        uuid.UUID      `json:"id"`
-	HaID      sql.NullString `json:"ha_id"`
-	Alamat    sql.NullString `json:"alamat"`
-	Latitude  sql.NullString `json:"latitude"`
-	Longitude sql.NullString `json:"longitude"`
-	CreatedAt sql.NullTime   `json:"created_at"`
-	UpdatedAt sql.NullTime   `json:"updated_at"`
+	ID        uuid.UUID    `json:"id"`
+	HaID      string       `json:"ha_id"`
+	Alamat    string       `json:"alamat"`
+	Latitude  float64      `json:"latitude"`
+	Longitude float64      `json:"longitude"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	UpdatedAt time.Time    `json:"updated_at"`
 }
 
 type PatientQueue struct {
-	ID         uuid.UUID      `json:"id"`
-	UserID     uuid.UUID      `json:"user_id"`
-	NoQueue    sql.NullString `json:"no_queue"`
-	StartQueue sql.NullTime   `json:"start_queue"`
-	EndQueue   sql.NullTime   `json:"end_queue"`
-	CreatedAt  sql.NullTime   `json:"created_at"`
-	UpdatedAt  sql.NullTime   `json:"updated_at"`
+	ID         uuid.UUID    `json:"id"`
+	UserID     uuid.UUID    `json:"user_id"`
+	NoQueue    string       `json:"no_queue"`
+	StartQueue time.Time    `json:"start_queue"`
+	EndQueue   time.Time    `json:"end_queue"`
+	CreatedAt  sql.NullTime `json:"created_at"`
+	UpdatedAt  time.Time    `json:"updated_at"`
 }
 
 type PatientResult struct {
-	ID          uuid.UUID      `json:"id"`
-	UserID      uuid.UUID      `json:"user_id"`
-	Description sql.NullString `json:"description"`
-	CreatedAt   sql.NullTime   `json:"created_at"`
-	UpdatedAt   sql.NullTime   `json:"updated_at"`
+	ID          uuid.UUID    `json:"id"`
+	UserID      uuid.UUID    `json:"user_id"`
+	Description string       `json:"description"`
+	CreatedAt   sql.NullTime `json:"created_at"`
+	UpdatedAt   time.Time    `json:"updated_at"`
 }
 
 type User struct {
-	ID             uuid.UUID      `json:"id"`
-	Username       sql.NullString `json:"username"`
-	Email          sql.NullString `json:"email"`
-	Password       sql.NullString `json:"password"`
-	HashedPassword sql.NullString `json:"hashed_password"`
-	Role           sql.NullString `json:"role"`
-	CreatedAt      sql.NullTime   `json:"created_at"`
-	UpdatedAt      sql.NullTime   `json:"updated_at"`
+	ID             uuid.UUID    `json:"id"`
+	Username       string       `json:"username"`
+	Email          string       `json:"email"`
+	Password       string       `json:"password"`
+	HashedPassword string       `json:"hashed_password"`
+	Role           string       `json:"role"`
+	IsVerified     sql.NullBool `json:"is_verified"`
+	CreatedAt      sql.NullTime `json:"created_at"`
+	UpdatedAt      sql.NullTime `json:"updated_at"`
+	VerifiedAt     sql.NullTime `json:"verified_at"`
 }
 
 type UserAccount struct {
-	ID           uuid.UUID      `json:"id"`
-	UserID       uuid.UUID      `json:"user_id"`
-	FirstName    sql.NullString `json:"firstName"`
-	LastName     sql.NullString `json:"lastName"`
-	PhotoProfile sql.NullString `json:"photo_profile"`
-	TempatLahir  sql.NullString `json:"tempat_lahir"`
-	Latitude     sql.NullString `json:"latitude"`
-	Longitude    sql.NullString `json:"longitude"`
-	TglLahir     sql.NullTime   `json:"tgl_lahir"`
-	CreatedAt    sql.NullTime   `json:"created_at"`
-	UpdatedAt    sql.NullTime   `json:"updated_at"`
+	ID           uuid.UUID    `json:"id"`
+	UserID       uuid.UUID    `json:"user_id"`
+	FirstName    string       `json:"first_name"`
+	LastName     string       `json:"last_name"`
+	PhotoProfile string       `json:"photo_profile"`
+	TempatLahir  string       `json:"tempat_lahir"`
+	Latitude     float64      `json:"latitude"`
+	Longitude    float64      `json:"longitude"`
+	TglLahir     time.Time    `json:"tgl_lahir"`
+	CreatedAt    sql.NullTime `json:"created_at"`
+	UpdatedAt    time.Time    `json:"updated_at"`
 }
 
 type UserAddress struct {
-	ID        uuid.UUID      `json:"id"`
-	UserID    uuid.UUID      `json:"user_id"`
-	Desa      sql.NullString `json:"desa"`
-	Dusun     sql.NullString `json:"dusun"`
-	Kecamatan sql.NullString `json:"kecamatan"`
-	Kabupaten sql.NullString `json:"kabupaten"`
-	Alamat    sql.NullString `json:"alamat"`
-	Latitude  sql.NullString `json:"latitude"`
-	Longitude sql.NullString `json:"longitude"`
-	CreatedAt sql.NullTime   `json:"created_at"`
-	UpdatedAt sql.NullTime   `json:"updated_at"`
+	ID        uuid.UUID    `json:"id"`
+	UserID    uuid.UUID    `json:"user_id"`
+	Desa      string       `json:"desa"`
+	Dusun     string       `json:"dusun"`
+	Kecamatan string       `json:"kecamatan"`
+	Kabupaten string       `json:"kabupaten"`
+	Alamat    string       `json:"alamat"`
+	Latitude  float64      `json:"latitude"`
+	Longitude float64      `json:"longitude"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	UpdatedAt time.Time    `json:"updated_at"`
+}
+
+type UserComplaint struct {
+	ID        uuid.UUID    `json:"id"`
+	UserID    uuid.UUID    `json:"user_id"`
+	Complaint string       `json:"complaint"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	UpdatedAt time.Time    `json:"updated_at"`
 }

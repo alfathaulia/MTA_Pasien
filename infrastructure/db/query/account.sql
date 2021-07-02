@@ -1,7 +1,7 @@
 -- name: GetUserAccount :one
 SELECT *
 FROM user_account
-WHERE username = $1
+WHERE id = $1
 LIMIT 1;
 -- name: ListUserAccount :many
 SELECT *
@@ -13,29 +13,29 @@ DELETE FROM user_account
 WHERE id = $1;
 -- name: UpdateUserAccount :one
 UPDATE user_account
-SET username = $1,
-  no_ktp = $2,
-  nama_ktp = $3,
-  alamat = $4,
-  kecamatan = $5,
-  kodepos = $6,
-  kelurahan = $7,
-  updated_at = $8
-WHERE username = $1
+SET id = $1,
+  first_name = $2,
+  last_name = $3,
+  photo_profile = $4,
+  tempat_lahir = $5,
+  latitude = $6,
+  longitude = $7,
+  tgl_lahir = $8,
+  updated_at = $9
+WHERE id = $1
 RETURNING *;
 -- name: CreateUserAccount :one
 INSERT INTO user_account (
-    username,
-    no_ktp,
-    nama_ktp,
-    alamat,
-    kecamatan,
-    kodepos,
-    kelurahan,
+    id,
+    user_id,
+    first_name,
+    last_name,
+    photo_profile,
+    tempat_lahir,
+    latitude,
+    longitude,
+    tgl_lahir,
     created_at
   )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 RETURNING *;
--- name: CreateUserAccountNoReturn :exec
-INSERT INTO user_account (username, no_ktp, created_at)
-VALUES ($1, $2, $3);

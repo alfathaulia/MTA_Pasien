@@ -8,7 +8,7 @@ createdb:
 	docker exec -it postgres13 createdb --username=postgres --owner=postgres mta_patient
 
 dropdb:
-	docker exec -it postgres13 dropdb mta_patient
+	docker exec -it postgres13  dropdb mta_patient --username=postgres 
 
 migrate:
 	migrate create -ext sql -dir infrastructure/db/migration -seq init_schema

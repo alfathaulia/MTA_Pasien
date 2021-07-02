@@ -6,17 +6,47 @@ package infrastructure
 import (
 	"context"
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
-const getUser = `-- name: GetUser :one
-SELECT id, username, email, password, hashed_password, role, created_at, updated_at
-FROM "user"
-WHERE username = $1
-LIMIT 1
+const createUser = `-- name: CreateUser :one
+INSERT INTO "user" (
+    id,
+    username,
+    email,
+    hashed_password,
+    password,
+    role,
+    is_verified,
+    created_at
+  )
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+RETURNING id, username, email, password, hashed_password, role, is_verified, created_at, updated_at, verified_at
 `
 
-func (q *Queries) GetUser(ctx context.Context, username sql.NullString) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUser, username)
+type CreateUserParams struct {
+	ID             uuid.UUID    `json:"id"`
+	Username       string       `json:"username"`
+	Email          string       `json:"email"`
+	HashedPassword string       `json:"hashed_password"`
+	Password       string       `json:"password"`
+	Role           string       `json:"role"`
+	IsVerified     sql.NullBool `json:"is_verified"`
+	CreatedAt      sql.NullTime `json:"created_at"`
+}
+
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, createUser,
+		arg.ID,
+		arg.Username,
+		arg.Email,
+		arg.HashedPassword,
+		arg.Password,
+		arg.Role,
+		arg.IsVerified,
+		arg.CreatedAt,
+	)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -25,8 +55,161 @@ func (q *Queries) GetUser(ctx context.Context, username sql.NullString) (User, e
 		&i.Password,
 		&i.HashedPassword,
 		&i.Role,
+		&i.IsVerified,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.VerifiedAt,
+	)
+	return i, err
+}
+
+const deleteUser = `-- name: DeleteUser :exec
+DELETE FROM "user"
+WHERE id = $1
+`
+
+func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteUser, id)
+	return err
+}
+
+const getUser = `-- name: GetUser :one
+SELECT id, username, email, password, hashed_password, role, is_verified, created_at, updated_at, verified_at
+FROM "user"
+WHERE id = $1
+LIMIT 1
+`
+
+func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUser, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Password,
+		&i.HashedPassword,
+		&i.Role,
+		&i.IsVerified,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.VerifiedAt,
+	)
+	return i, err
+}
+
+const login = `-- name: Login :one
+SELECT username,
+  hashed_password,
+  email
+from "user"
+WHERE email = $1
+`
+
+type LoginRow struct {
+	Username       string `json:"username"`
+	HashedPassword string `json:"hashed_password"`
+	Email          string `json:"email"`
+}
+
+func (q *Queries) Login(ctx context.Context, email string) (LoginRow, error) {
+	row := q.db.QueryRowContext(ctx, login, email)
+	var i LoginRow
+	err := row.Scan(&i.Username, &i.HashedPassword, &i.Email)
+	return i, err
+}
+
+const register = `-- name: Register :one
+INSERT INTO "user" (
+    id,
+    username,
+    email,
+    password,
+    hashed_password,
+    role,
+    created_at
+  )
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+RETURNING id, username, email, password, hashed_password, role, is_verified, created_at, updated_at, verified_at
+`
+
+type RegisterParams struct {
+	ID             uuid.UUID    `json:"id"`
+	Username       string       `json:"username"`
+	Email          string       `json:"email"`
+	Password       string       `json:"password"`
+	HashedPassword string       `json:"hashed_password"`
+	Role           string       `json:"role"`
+	CreatedAt      sql.NullTime `json:"created_at"`
+}
+
+func (q *Queries) Register(ctx context.Context, arg RegisterParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, register,
+		arg.ID,
+		arg.Username,
+		arg.Email,
+		arg.Password,
+		arg.HashedPassword,
+		arg.Role,
+		arg.CreatedAt,
+	)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Password,
+		&i.HashedPassword,
+		&i.Role,
+		&i.IsVerified,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.VerifiedAt,
+	)
+	return i, err
+}
+
+const updateUser = `-- name: UpdateUser :one
+UPDATE "user"
+SET username = $2,
+  email = $3,
+  is_verified = $4,
+  role = $5,
+  updated_at = $6
+WHERE id = $1
+RETURNING id, username, email, password, hashed_password, role, is_verified, created_at, updated_at, verified_at
+`
+
+type UpdateUserParams struct {
+	ID         uuid.UUID    `json:"id"`
+	Username   string       `json:"username"`
+	Email      string       `json:"email"`
+	IsVerified sql.NullBool `json:"is_verified"`
+	Role       string       `json:"role"`
+	UpdatedAt  sql.NullTime `json:"updated_at"`
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateUser,
+		arg.ID,
+		arg.Username,
+		arg.Email,
+		arg.IsVerified,
+		arg.Role,
+		arg.UpdatedAt,
+	)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Password,
+		&i.HashedPassword,
+		&i.Role,
+		&i.IsVerified,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.VerifiedAt,
 	)
 	return i, err
 }
